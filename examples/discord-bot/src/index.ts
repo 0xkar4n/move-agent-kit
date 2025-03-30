@@ -121,13 +121,20 @@ client.on(Events.MessageCreate, async (message:any) => {
     
     // Extract content after the second occurrence of "Agent:"
     const messageToSend = getSubstringAfterNthOccurrence(resultText, "Agent:", 2).trim();
-    
     if (messageToSend) {
       await message.reply(messageToSend);
       userChatHistory.push(new HumanMessage(messageToSend));
     } else {
-      console.error("The expected format was not found in resultText.");
-    }      
+      
+      const firstResponse = getSubstringAfterNthOccurrence(resultText, "Agent:", 1).trim();
+      if (firstResponse) {
+        await message.reply(firstResponse);
+        userChatHistory.push(new HumanMessage(firstResponse));
+      } else {
+        console.error("No agent response found in resultText.");
+        await message.reply("I'm ready to help with your Aptos wallet. What would you like to do?");
+      }
+    }
     
   } catch (error) {
     console.error('Error handling message:', error);
